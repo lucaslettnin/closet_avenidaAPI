@@ -1,0 +1,63 @@
+// Este é o seu arquivo de schema Prisma
+// Saiba mais em: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Produto {
+  id            Int      @id @default(autoincrement())
+  modelo        String   @db.VarChar(120)
+  preco         Decimal  @db.Decimal(10, 2)
+  foto          String   @db.VarChar(4000)
+  descricao     String   @db.VarChar(200)
+  destaque      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  avaliacoes Avaliacao[] // Um produto pode ter várias avaliações
+
+  @@map("produtos")
+}
+
+model Cliente {
+  id                String      @id @default(uuid()) @db.VarChar(36)
+  nome              String      @db.VarChar(60)
+  email             String      @unique @db.VarChar(60) // Email único
+  senha             String      @db.VarChar(60)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  recuperacao       String?     @db.VarChar(6)
+  avaliacao         Avaliacao[]
+
+  @@map("clientes")
+}
+
+
+model Avaliacao {
+  id          Int       @id @default(autoincrement())
+  cliente     Cliente   @relation(fields: [clienteId], references: [id])
+  clienteId   String    @db.VarChar(36)
+  produto     Produto   @relation(fields: [produtoId], references: [id])
+  produtoId   Int
+  estrelas    Int       // Avaliação em estrelas
+  comentario  String?   @db.VarChar(255)
+  resposta    String?   @db.VarChar(255)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt  
+  @@map("avaliacoes")
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  nome      String   @db.VarChar(60)
+  email     String   @unique @db.VarChar(60)
+  senha     String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
