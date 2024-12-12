@@ -19,9 +19,9 @@ model Produto {
   destaque      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-
   avaliacoes Avaliacao[] // Um produto pode ter várias avaliações
-
+  admin       Admin        @relation(fields: [adminId], references: [id])
+  adminId     Int          @default(1)
   @@map("produtos")
 }
 
@@ -60,4 +60,6 @@ model Admin {
   senha     String   @db.VarChar(255)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  produtos    Produto[]
+ @@map("admins")
 }
